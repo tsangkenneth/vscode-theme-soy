@@ -1,3 +1,10 @@
+<p align="center">
+  <br>
+  <a href="https://marketplace.visualstudio.com/items?itemName=tsangkenneth.vscode-theme-soy">
+    <img src="https://raw.githubusercontent.com/tsangkenneth/vscode-theme-soy/refs/heads/main/images/icon.png" width="128px" height="128px">
+  </a>
+</p>
+
 # Soy Themes
 
 VS Code themes with **minimal syntax highlighting** and a **fully colored UI**,
@@ -31,6 +38,11 @@ and [Nord](https://www.nordtheme.com/) by Sven Greb.
 This project was created with help from an LLM.
 [Claude](https://www.anthropic.com/claude) helped write the code, documentation,
 and screenshot tooling.
+
+### Why “Soy”?
+
+Soybeans are amazing! They can be plain (_minimalist_) but also made into a wide
+variety of foods (_variants_): soymilk, tofu, miso, edamame, etc.
 
 ## Installation
 
