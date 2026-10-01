@@ -29,8 +29,8 @@ Pertsev, [Solarized](https://ethanschoonover.com/solarized/) by Ethan Schoonover
 and [Nord](https://www.nordtheme.com/) by Sven Greb.
 
 This project was created with help from an LLM.
-[Claude](https://www.anthropic.com/claude) helped write the code,
-documentation and screenshot tooling.
+[Claude](https://www.anthropic.com/claude) helped write the code, documentation,
+and screenshot tooling.
 
 ## Installation
 

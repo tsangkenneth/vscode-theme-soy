@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format is based on
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-09-30
+
 ### Added
 
 - Nine themes: Soy Gruvbox Dark and Light in medium, hard and soft contrast, Soy

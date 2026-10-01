@@ -21,6 +21,8 @@ jobs:
         with:
           deno-version: v2.x
 
+      # The release notes go in the runner's temp folder, outside the
+      # repository, so `deno fmt --check` doesn't see them.
       - name: Check the tag, package.json and CHANGELOG.md agree
         run: |
           version="$(jq -r .version package.json)"
@@ -31,8 +33,8 @@ jobs:
           awk -v heading="## [$version]" '
             /^## \[/ { inside = index($0, heading) == 1; next }
             inside
-          ' CHANGELOG.md > release-notes.md
-          if ! grep -q '[^[:space:]]' release-notes.md; then
+          ' CHANGELOG.md > "$RUNNER_TEMP/release-notes.md"
+          if ! grep -q '[^[:space:]]' "$RUNNER_TEMP/release-notes.md"; then
             echo "::error::CHANGELOG.md has no section for [$version]"
             exit 1
           fi
@@ -45,7 +47,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "$GITHUB_REF_NAME" *.vsix \
-            --title "$GITHUB_REF_NAME" --notes-file release-notes.md
+            --title "$GITHUB_REF_NAME" --notes-file "$RUNNER_TEMP/release-notes.md"
 
       - name: Publish to Open VSX
         if: env.OVSX_PAT != ''
