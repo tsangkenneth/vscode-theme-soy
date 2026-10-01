@@ -1,10 +1,18 @@
 // Checks every variant for consistency and readable contrast.
 //
 // Mistakes (exit code 1): the syntax text color differs from the editor
-// foreground, or a color is not an opaque #rrggbb hex.
+// foreground, a color is not an opaque #rrggbb hex, or themes/ and
+// package.json don't match what the build would write.
 // Warnings: a color is below its contrast target against the background.
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import process from "node:process";
 import { contrastRatio } from "../src/color.ts";
+import {
+  generateTheme,
+  manifestThemes,
+  themeFileName,
+  toJson,
+} from "../src/theme.ts";
 import type { Hex, PaletteKey, SyntaxRoles } from "../src/types.ts";
 import { variants } from "../src/variants.ts";
 
@@ -82,6 +90,33 @@ for (const { id, palette, syntax } of variants) {
   // Badge text on its two badge backgrounds
   checkContrast(id, "ui white on purple1", palette.white, palette.purple1, 3);
   checkContrast(id, "ui white on blue1", palette.white, palette.blue1, 3);
+}
+
+// Generated files must match the source
+const themesDir = new URL("../themes/", import.meta.url);
+for (const variant of variants) {
+  const file = new URL(themeFileName(variant), themesDir);
+  if (
+    !existsSync(file) ||
+    readFileSync(file, "utf8") !== toJson(generateTheme(variant))
+  ) {
+    mistakes.push(`themes/${themeFileName(variant)} is out of date; run build`);
+  }
+}
+const themeFiles = new Set(variants.map(themeFileName));
+for (const name of readdirSync(themesDir)) {
+  if (name.endsWith(".json") && !themeFiles.has(name)) {
+    mistakes.push(`themes/${name} is not a variant; run build`);
+  }
+}
+const pkg = JSON.parse(
+  readFileSync(new URL("../package.json", import.meta.url), "utf8"),
+);
+if (
+  JSON.stringify(pkg.contributes?.themes) !==
+    JSON.stringify(manifestThemes(variants))
+) {
+  mistakes.push("package.json contributes.themes is out of date; run build");
 }
 
 for (const warning of warnings) console.warn(`warning: ${warning}`);

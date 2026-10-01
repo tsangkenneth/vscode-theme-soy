@@ -9,8 +9,40 @@ color, and comments are prominent rather than dimmed. The rest of the workbench
 (sidebar, tabs, status bar, terminal, git decorations and so on) uses the full
 palette.
 
-> **Status:** work in progress. All variants are available; publishing is still
-> to come.
+### Inspiration and credits
+
+- [I am sorry, but everyone is getting syntax highlighting wrong](https://tonsky.me/blog/syntax-highlighting/)
+  by Nikita Prokopov ([tonsky](https://github.com/tonsky)) sets out the
+  principles for the syntax highlighting.
+- [Alabaster](https://github.com/tonsky/vscode-theme-alabaster), also by
+  [tonsky](https://github.com/tonsky), is the reference implementation of those
+  principles for VS Code.
+- [Gruvbox Theme](https://github.com/jdinhify/vscode-theme-gruvbox) by
+  [jdinhify](https://github.com/jdinhify) provides the theme generator and the
+  UI color mappings this project is built on.
+
+Both projects are MIT licensed; their notices are reproduced in
+[LICENSE](LICENSE).
+
+The color palettes are [Gruvbox](https://github.com/morhetz/gruvbox) by Pavel
+Pertsev, [Solarized](https://ethanschoonover.com/solarized/) by Ethan Schoonover
+and [Nord](https://www.nordtheme.com/) by Sven Greb.
+
+This project was created with help from an LLM.
+[Claude](https://www.anthropic.com/claude) helped write the code,
+documentation and screenshot tooling.
+
+## Installation
+
+- **VS Code:** search for "Soy Themes" in the Extensions view, or install it
+  from the
+  [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=tsangkenneth.vscode-theme-soy).
+- **Manually,** including in VSCodium, Cursor and other editors based on VS
+  Code: download the `.vsix` from
+  [GitHub Releases](https://github.com/tsangkenneth/vscode-theme-soy/releases)
+  and run **Extensions: Install from VSIX...**.
+
+Then run **Preferences: Color Theme** and pick one of the Soy variants.
 
 ## Variants
 
@@ -106,25 +138,6 @@ highlights at least 3:1. For example:
 
 The terminal uses the official ANSI colors of Solarized and Nord.
 
-## Inspiration and credits
-
-- [I am sorry, but everyone is getting syntax highlighting wrong](https://tonsky.me/blog/syntax-highlighting/)
-  by Nikita Prokopov ([tonsky](https://github.com/tonsky)) sets out the
-  principles for the syntax highlighting.
-- [Alabaster](https://github.com/tonsky/vscode-theme-alabaster), also by
-  [tonsky](https://github.com/tonsky), is the reference implementation of those
-  principles for VS Code.
-- [Gruvbox Theme](https://github.com/jdinhify/vscode-theme-gruvbox) by
-  [jdinhify](https://github.com/jdinhify) provides the theme generator and the
-  UI color mappings this project is built on.
-
-Both projects are MIT licensed; their notices are reproduced in
-[LICENSE](LICENSE).
-
-The color palettes are [Gruvbox](https://github.com/morhetz/gruvbox) by Pavel
-Pertsev, [Solarized](https://ethanschoonover.com/solarized/) by Ethan Schoonover
-and [Nord](https://www.nordtheme.com/) by Sven Greb.
-
 ## Development
 
 The generator is plain TypeScript with no dependencies. It runs on Deno, Node
@@ -135,6 +148,7 @@ deno task build        # or: node src/main.ts / bun src/main.ts
 deno task check        # format, lint, type check and contrast check
 deno task preview      # show how a variant colors the samples
 deno task screenshots  # regenerate the images in images/
+deno task package      # build the .vsix extension package
 ```
 
 Node and Bun can run the scripts directly, e.g. `node scripts/check.ts` or
@@ -145,8 +159,10 @@ Node and Bun can run the scripts directly, e.g. `node scripts/check.ts` or
 generated themes along with the source changes.
 
 `check` fails if a variant is inconsistent (for example, its syntax text color
-differs from the editor foreground) and warns about any color below its contrast
-target.
+differs from the editor foreground) or the generated files are out of date, and
+warns about any color below its contrast target. CI runs it on every push and
+pull request, along with the build on Node and Bun and a test package. See
+[RELEASING.md](RELEASING.md) for publishing.
 
 To try the themes, open this folder in VS Code and press <kbd>F5</kbd>. This
 opens an Extension Development Host window where the Soy themes are available in
@@ -204,6 +220,7 @@ Rerun it after changing colors, or pass `--variant <id>` for one variant and
 | `themes/`                | Generated theme files                             |
 | `images/`                | Generated screenshots for this README             |
 | `samples/`               | Code samples for checking the syntax rules        |
+| `.github/workflows/`     | CI and release workflows                          |
 
 ## License
 

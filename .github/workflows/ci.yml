@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Check and package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      # Format, lint, type check, contrast, and generated files up to date
+      - run: deno task check
+      - run: deno task package
+      - uses: actions/upload-artifact@v7
+        with:
+          name: vsix
+          path: "*.vsix"
+
+  runtimes:
+    name: Build with ${{ matrix.runtime }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        runtime: [node, bun]
+    steps:
+      - uses: actions/checkout@v7
+      - if: matrix.runtime == 'node'
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - if: matrix.runtime == 'bun'
+        uses: oven-sh/setup-bun@v2
+      - run: ${{ matrix.runtime }} src/main.ts
+      # The build must reproduce the committed themes exactly
+      - run: git diff --exit-code
+      - run: ${{ matrix.runtime }} scripts/check.ts

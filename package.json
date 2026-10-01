@@ -3,9 +3,19 @@
   "displayName": "Soy Themes",
   "description": "Themes for Visual Studio Code with minimal syntax highlighting and a fully colored UI",
   "version": "0.0.1",
+  "publisher": "tsangkenneth",
+  "author": "Kenneth Tsang",
   "license": "MIT",
   "private": true,
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tsangkenneth/vscode-theme-soy.git"
+  },
+  "homepage": "https://github.com/tsangkenneth/vscode-theme-soy#readme",
+  "bugs": {
+    "url": "https://github.com/tsangkenneth/vscode-theme-soy/issues"
+  },
   "engines": {
     "vscode": "^1.67.2",
     "node": ">=22.18"
@@ -13,10 +23,27 @@
   "categories": [
     "Themes"
   ],
+  "keywords": [
+    "theme",
+    "color theme",
+    "minimal",
+    "syntax highlighting",
+    "alabaster",
+    "gruvbox",
+    "solarized",
+    "nord",
+    "dark",
+    "light"
+  ],
+  "galleryBanner": {
+    "color": "#282828",
+    "theme": "dark"
+  },
   "scripts": {
     "build": "node src/main.ts",
     "check": "node scripts/check.ts",
-    "preview": "node scripts/preview.ts"
+    "preview": "node scripts/preview.ts",
+    "package": "npx --yes @vscode/vsce@4 package --no-dependencies"
   },
   "devDependencies": {
     "vscode-oniguruma": "^2.0.1",
