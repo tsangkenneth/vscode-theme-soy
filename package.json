@@ -2,7 +2,7 @@
   "name": "vscode-theme-soy",
   "displayName": "Soy Themes",
   "description": "Themes for Visual Studio Code with minimal syntax highlighting and a fully colored UI",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "tsangkenneth",
   "author": "Kenneth Tsang",
   "license": "MIT",
