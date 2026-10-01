@@ -14,7 +14,8 @@
     "Themes"
   ],
   "scripts": {
-    "build": "node src/main.ts"
+    "build": "node src/main.ts",
+    "check": "node scripts/check.ts"
   },
   "contributes": {
     "themes": [
@@ -47,6 +48,21 @@
         "label": "Soy Gruvbox Light - Soft Contrast",
         "uiTheme": "vs",
         "path": "./themes/soy-gruvbox-light-soft.json"
+      },
+      {
+        "label": "Soy Solarized Light",
+        "uiTheme": "vs",
+        "path": "./themes/soy-solarized-light.json"
+      },
+      {
+        "label": "Soy Solarized Dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/soy-solarized-dark.json"
+      },
+      {
+        "label": "Soy Nord",
+        "uiTheme": "vs-dark",
+        "path": "./themes/soy-nord.json"
       }
     ]
   }

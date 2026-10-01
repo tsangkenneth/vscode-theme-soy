@@ -12,7 +12,9 @@ const packageJsonFile = new URL("../package.json", import.meta.url);
 
 const toJson = (value: unknown) => `${JSON.stringify(value, undefined, 2)}\n`;
 
-const generateTheme = ({ label, type, palette, syntax }: Variant) => ({
+const generateTheme = (
+  { label, type, palette, syntax, uiOverrides }: Variant,
+) => ({
   $schema: "vscode://schemas/color-theme",
   name: label,
   type,
@@ -20,6 +22,7 @@ const generateTheme = ({ label, type, palette, syntax }: Variant) => ({
     ...getBaseColors(palette),
     ...getJupyterNotebookColors(palette),
     ...getGitLensColors(palette),
+    ...uiOverrides,
   },
   tokenColors: getTokenColors(syntax),
   semanticHighlighting: true,

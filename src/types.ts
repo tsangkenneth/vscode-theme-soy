@@ -38,7 +38,8 @@ export type Palette = Record<PaletteKey, Hex>;
 
 // The only colors used for code in the editor.
 export type SyntaxRoles = {
-  // Everything not listed below: keywords, variables, calls, operators, types
+  // Everything not listed below: keywords, variables, calls, operators, types.
+  // Must be the palette's fg1, which is the editor foreground.
   text: Hex;
   // Prominent, not dimmed: comments are worth reading
   comment: Hex;
@@ -65,6 +66,9 @@ export type Variant = {
   type: ColorScheme;
   palette: Palette;
   syntax: SyntaxRoles;
+  // Workbench colors that replace the generated ones, e.g. a palette's
+  // official terminal colors
+  uiOverrides?: Record<string, string>;
 };
 
 export type ColorsGetter = (palette: Palette) => Record<string, string>;
