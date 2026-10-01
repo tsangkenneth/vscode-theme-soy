@@ -1,0 +1,27 @@
+@import url("base.css");
+
+:root {
+  --accent: #458588;
+  --gap: 1.5rem;
+}
+
+/* Cards in the main grid */
+.grid > .card:hover,
+#main a[href^="https"] {
+  color: var(--accent);
+  margin: calc(var(--gap) / 2) auto;
+  font-family: "Iosevka", monospace !important;
+  transition: opacity 200ms ease-in-out;
+}
+
+@media (max-width: 600px) {
+  body {
+    display: none;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}

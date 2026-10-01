@@ -1,0 +1,9 @@
+diff --git a/src/main.ts b/src/main.ts
+index 3b18e51..a9c4f2d 100644
+--- a/src/main.ts
++++ b/src/main.ts
+@@ -1,4 +1,4 @@
+ import { variants } from "./variants.ts";
+-const count = 6;
++const count = 9;
+ console.log(count);

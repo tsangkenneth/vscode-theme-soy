@@ -1,0 +1,53 @@
+{
+  "name": "vscode-theme-soy",
+  "displayName": "Soy Themes",
+  "description": "Themes for Visual Studio Code with minimal syntax highlighting and a fully colored UI",
+  "version": "0.0.1",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "vscode": "^1.67.2",
+    "node": ">=22.18"
+  },
+  "categories": [
+    "Themes"
+  ],
+  "scripts": {
+    "build": "node src/main.ts"
+  },
+  "contributes": {
+    "themes": [
+      {
+        "label": "Soy Gruvbox Dark - Medium Contrast",
+        "uiTheme": "vs-dark",
+        "path": "./themes/soy-gruvbox-dark-medium.json"
+      },
+      {
+        "label": "Soy Gruvbox Dark - Hard Contrast",
+        "uiTheme": "vs-dark",
+        "path": "./themes/soy-gruvbox-dark-hard.json"
+      },
+      {
+        "label": "Soy Gruvbox Dark - Soft Contrast",
+        "uiTheme": "vs-dark",
+        "path": "./themes/soy-gruvbox-dark-soft.json"
+      },
+      {
+        "label": "Soy Gruvbox Light - Medium Contrast",
+        "uiTheme": "vs",
+        "path": "./themes/soy-gruvbox-light-medium.json"
+      },
+      {
+        "label": "Soy Gruvbox Light - Hard Contrast",
+        "uiTheme": "vs",
+        "path": "./themes/soy-gruvbox-light-hard.json"
+      },
+      {
+        "label": "Soy Gruvbox Light - Soft Contrast",
+        "uiTheme": "vs",
+        "path": "./themes/soy-gruvbox-light-soft.json"
+      }
+    ]
+  }
+}

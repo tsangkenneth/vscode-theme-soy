@@ -1,0 +1,8 @@
+{
+  "name": "soy",
+  "version": 1.5,
+  "private": true,
+  "license": null,
+  "keywords": ["theme", "minimal\tsyntax"],
+  "nested": { "depth": 2 }
+}

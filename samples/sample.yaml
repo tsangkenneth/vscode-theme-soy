@@ -1,0 +1,15 @@
+# CI workflow
+name: check
+on:
+  push:
+    branches: [main]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: deno task check
+        env:
+          DEBUG: true
+          LEVEL: "info\n"
