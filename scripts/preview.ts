@@ -12,16 +12,19 @@
 //   --extensions <dir>  VS Code's built-in extensions folder (default: found
 //                       in the usual install locations)
 // Files default to everything in samples/.
-import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { createRequire } from "node:module";
+import { readdirSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import { parseArgs } from "node:util";
-import oniguruma from "vscode-oniguruma";
-import vsctm from "vscode-textmate";
 import { generateTheme } from "../src/theme.ts";
 import type { SyntaxRoles } from "../src/types.ts";
 import { variants } from "../src/variants.ts";
+import {
+  createHighlighter,
+  findExtensionsDir,
+  FontStyle,
+  type Token,
+} from "./lib/textmate.ts";
 
 const { values: options, positionals } = parseArgs({
   allowPositionals: true,
@@ -40,82 +43,8 @@ const fail = (message: string): never => {
   process.exit(1);
 };
 
-// Find VS Code's grammars
-
-const installLocations = (): string[] => {
-  const { HOME, LOCALAPPDATA, ProgramFiles } = process.env;
-  const app = "resources/app/extensions";
-  switch (process.platform) {
-    case "darwin":
-      return [
-        "/Applications/Visual Studio Code.app",
-        `${HOME}/Applications/Visual Studio Code.app`,
-        "/Applications/Visual Studio Code - Insiders.app",
-      ].map((dir) => `${dir}/Contents/Resources/app/extensions`);
-    case "win32":
-      return [
-        `${LOCALAPPDATA}/Programs/Microsoft VS Code/${app}`,
-        `${ProgramFiles}/Microsoft VS Code/${app}`,
-      ];
-    default:
-      return [
-        `/usr/share/code/${app}`,
-        `/opt/visual-studio-code/${app}`,
-        `/snap/code/current/usr/share/code/${app}`,
-      ];
-  }
-};
-
-const extensionsDir = options.extensions ??
-  installLocations().find((dir) => existsSync(dir)) ??
-  fail(
-    "Could not find VS Code's built-in extensions; pass --extensions <dir>",
-  );
-
-const grammarFiles = new Map<string, string>();
-const injections = new Map<string, string[]>();
-const languageByExtension = new Map<string, string>();
-const languageByFilename = new Map<string, string>();
-const scopeByLanguage = new Map<string, string>();
-
-for (const name of readdirSync(extensionsDir)) {
-  const manifest = path.join(extensionsDir, name, "package.json");
-  if (!existsSync(manifest)) continue;
-  const { contributes = {} } = JSON.parse(readFileSync(manifest, "utf8"));
-  for (const language of contributes.languages ?? []) {
-    for (const ext of language.extensions ?? []) {
-      if (!languageByExtension.has(ext)) {
-        languageByExtension.set(ext, language.id);
-      }
-    }
-    for (const filename of language.filenames ?? []) {
-      languageByFilename.set(filename, language.id);
-    }
-  }
-  for (const grammar of contributes.grammars ?? []) {
-    grammarFiles.set(
-      grammar.scopeName,
-      path.join(extensionsDir, name, grammar.path),
-    );
-    if (grammar.language && !scopeByLanguage.has(grammar.language)) {
-      scopeByLanguage.set(grammar.language, grammar.scopeName);
-    }
-    for (const target of grammar.injectTo ?? []) {
-      injections.set(target, [
-        ...(injections.get(target) ?? []),
-        grammar.scopeName,
-      ]);
-    }
-  }
-}
-
-const scopeForFile = (file: string) => {
-  const language = languageByFilename.get(path.basename(file)) ??
-    languageByExtension.get(path.extname(file).toLowerCase());
-  return language && scopeByLanguage.get(language);
-};
-
-// Set up the TextMate engine with the variant's theme
+const extensionsDir = options.extensions ?? findExtensionsDir() ??
+  fail("Could not find VS Code's built-in extensions; pass --extensions <dir>");
 
 const variant = options.variant
   ? variants.find(({ id }) => id === options.variant) ??
@@ -126,41 +55,6 @@ const variant = options.variant
     )
   : variants[0];
 const theme = generateTheme(variant);
-
-const require = createRequire(import.meta.url);
-await oniguruma.loadWASM(
-  readFileSync(require.resolve("vscode-oniguruma/release/onig.wasm")),
-);
-
-const registry = new vsctm.Registry({
-  onigLib: Promise.resolve({
-    createOnigScanner: (sources: string[]) =>
-      new oniguruma.OnigScanner(sources),
-    createOnigString: (text: string) => new oniguruma.OnigString(text),
-  }),
-  loadGrammar: (scopeName: string) => {
-    const file = grammarFiles.get(scopeName);
-    return Promise.resolve(
-      file && existsSync(file)
-        ? vsctm.parseRawGrammar(readFileSync(file, "utf8"), file)
-        : null,
-    );
-  },
-  getInjections: (scopeName: string) => injections.get(scopeName),
-});
-registry.setTheme({
-  name: theme.name,
-  settings: [
-    {
-      settings: {
-        foreground: theme.colors["editor.foreground"],
-        background: theme.colors["editor.background"],
-      },
-    },
-    ...theme.tokenColors,
-  ],
-});
-const colorMap = registry.getColorMap();
 
 // Name colors by syntax role. Earlier roles win when two share a color.
 const roleOrder: (keyof SyntaxRoles)[] = [
@@ -181,28 +75,21 @@ for (const role of roleOrder) {
   if (!roleByColor.has(color)) roleByColor.set(color, role);
 }
 
-// Bit layout of vscode-textmate's encoded token metadata
-const fontStyleOf = (metadata: number) => (metadata & 0x00007800) >>> 11;
-const foregroundOf = (metadata: number) =>
-  colorMap[(metadata & 0x00ff8000) >>> 15];
-
 const ansiColor = (hex: string, layer: 38 | 48) => {
   const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
   return `\x1b[${layer};2;${r};${g};${b}m`;
 };
 const ansiFontStyles: [number, string][] = [
-  [1, "\x1b[3m"], // italic
-  [2, "\x1b[1m"], // bold
-  [4, "\x1b[4m"], // underline
-  [8, "\x1b[9m"], // strikethrough
+  [FontStyle.italic, "\x1b[3m"],
+  [FontStyle.bold, "\x1b[1m"],
+  [FontStyle.underline, "\x1b[4m"],
+  [FontStyle.strikethrough, "\x1b[9m"],
 ];
 const background = ansiColor(theme.colors["editor.background"], 48);
 const lineNumberColor = ansiColor(
   theme.colors["editorLineNumber.foreground"],
   38,
 );
-
-type Token = { text: string; color: string; fontStyle: number };
 
 const renderAnsi = (tokens: Token[]) =>
   tokens.map(({ text, color, fontStyle }) =>
@@ -213,9 +100,9 @@ const renderAnsi = (tokens: Token[]) =>
 
 const roleLabel = ({ color, fontStyle }: Token) => {
   let label = roleByColor.get(color.toUpperCase()) ?? color;
-  if (fontStyle & 1) label += "+italic";
-  if (fontStyle & 2) label += "+bold";
-  if (fontStyle & 8) label += "+strikethrough";
+  if (fontStyle & FontStyle.italic) label += "+italic";
+  if (fontStyle & FontStyle.bold) label += "+bold";
+  if (fontStyle & FontStyle.strikethrough) label += "+strikethrough";
   return label;
 };
 
@@ -241,34 +128,19 @@ const files = positionals.length > 0
   ? positionals
   : readdirSync("samples").sort().map((name) => path.join("samples", name));
 
+const { highlight } = await createHighlighter(extensionsDir);
+
 console.log(`${variant.label} (${variant.id})`);
 for (const file of files) {
-  const scopeName = scopeForFile(file);
-  const grammar = scopeName && await registry.loadGrammar(scopeName);
-  if (!grammar) {
+  const result = await highlight(file, theme);
+  if (!result) {
     console.log(`\n=== ${file}: no grammar found, skipped`);
     continue;
   }
-  console.log(`\n=== ${file} (${scopeName})`);
+  console.log(`\n=== ${file} (${result.scopeName})`);
 
-  const lines = readFileSync(file, "utf8").replace(/\n$/, "").split("\n");
-  const width = String(lines.length).length;
-  let ruleStack = vsctm.INITIAL;
-  lines.forEach((line, index) => {
-    const { tokens: encoded, ruleStack: next } = grammar.tokenizeLine2(
-      line,
-      ruleStack,
-    );
-    const tokens: Token[] = [];
-    for (let i = 0; i < encoded.length; i += 2) {
-      const end = i + 2 < encoded.length ? encoded[i + 2] : line.length;
-      tokens.push({
-        text: line.slice(encoded[i], end),
-        color: foregroundOf(encoded[i + 1]),
-        fontStyle: fontStyleOf(encoded[i + 1]),
-      });
-    }
-
+  const width = String(result.lines.length).length;
+  result.lines.forEach(({ tokens, scopes }, index) => {
     const number = String(index + 1).padStart(width);
     console.log(
       plain
@@ -277,17 +149,14 @@ for (const file of files) {
           renderAnsi(tokens)
         }\x1b[K\x1b[0m`,
     );
-
     if (options.scopes) {
-      for (const token of grammar.tokenizeLine(line, ruleStack).tokens) {
-        const text = line.slice(token.startIndex, token.endIndex);
-        if (text.includes(options.scopes)) {
+      for (const token of scopes) {
+        if (token.text.includes(options.scopes)) {
           console.log(
-            `${" ".repeat(width)}  "${text}": ${token.scopes.join(" ")}`,
+            `${" ".repeat(width)}  "${token.text}": ${token.scopes.join(" ")}`,
           );
         }
       }
     }
-    ruleStack = next;
   });
 }

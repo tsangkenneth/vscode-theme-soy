@@ -2,7 +2,8 @@
   "tasks": {
     "build": "deno run --allow-read=. --allow-write=themes,package.json src/main.ts",
     "check": "deno fmt --check && deno lint && deno check src scripts && deno run scripts/check.ts",
-    "preview": "deno run --allow-read --allow-env scripts/preview.ts"
+    "preview": "deno run --allow-read --allow-env scripts/preview.ts",
+    "screenshots": "deno run --allow-read --allow-write --allow-env --allow-run scripts/screenshots.ts"
   },
   "nodeModulesDir": "none",
   "compilerOptions": {
