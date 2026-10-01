@@ -30,12 +30,12 @@ jobs:
             echo "::error::Tag $GITHUB_REF_NAME does not match package.json version $version"
             exit 1
           fi
-          awk -v heading="## [$version]" '
-            /^## \[/ { inside = index($0, heading) == 1; next }
+          awk -v heading="## $version (" '
+            /^## / { inside = index($0, heading) == 1; next }
             inside
           ' CHANGELOG.md > "$RUNNER_TEMP/release-notes.md"
           if ! grep -q '[^[:space:]]' "$RUNNER_TEMP/release-notes.md"; then
-            echo "::error::CHANGELOG.md has no section for [$version]"
+            echo "::error::CHANGELOG.md has no section for $version"
             exit 1
           fi
 

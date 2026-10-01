@@ -8,8 +8,9 @@ release, so it can be installed by hand in other editors.
 
 ## Each release
 
-1. In `CHANGELOG.md`, rename `## [Unreleased]` to the new version and date, e.g.
-   `## [0.1.0] - 2026-10-01`, and add a new empty `## [Unreleased]` above it.
+1. In `CHANGELOG.md`, rename `## Unreleased` to the new version and date, e.g.
+   `## 0.1.0 (2026-10-01)`. Don't leave an empty `## Unreleased` heading behind;
+   the next change after the release adds it back above the latest version.
 2. Set `version` in `package.json` to the same version.
 3. Run `deno task build` and `deno task check`.
 4. Commit, then tag and push:
