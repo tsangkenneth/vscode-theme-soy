@@ -5,13 +5,7 @@
 // Usage: deno task screenshots [--variant <id>] [--chrome <path>]
 //                              [--extensions <dir>]
 import { execFileSync } from "node:child_process";
-import {
-  existsSync,
-  mkdirSync,
-  mkdtempSync,
-  rmSync,
-  writeFileSync,
-} from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import process from "node:process";
@@ -19,6 +13,7 @@ import { pathToFileURL } from "node:url";
 import { parseArgs } from "node:util";
 import { generateTheme } from "../src/theme.ts";
 import { variants } from "../src/variants.ts";
+import { findChrome } from "./lib/chrome.ts";
 import {
   createHighlighter,
   findExtensionsDir,
@@ -38,27 +33,6 @@ const { values: options } = parseArgs({
 const fail = (message: string): never => {
   console.error(message);
   process.exit(1);
-};
-
-const findChrome = (): string | undefined => {
-  const { LOCALAPPDATA, ProgramFiles, PATH = "" } = process.env;
-  const candidates = process.platform === "darwin"
-    ? [
-      "Google Chrome.app/Contents/MacOS/Google Chrome",
-      "Chromium.app/Contents/MacOS/Chromium",
-      "Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
-    ].map((app) => `/Applications/${app}`)
-    : process.platform === "win32"
-    ? [
-      `${ProgramFiles}/Google/Chrome/Application/chrome.exe`,
-      `${LOCALAPPDATA}/Google/Chrome/Application/chrome.exe`,
-      `${ProgramFiles} (x86)/Microsoft/Edge/Application/msedge.exe`,
-    ]
-    : ["google-chrome", "chromium", "chromium-browser", "microsoft-edge"]
-      .flatMap((name) =>
-        PATH.split(path.delimiter).map((dir) => path.join(dir, name))
-      );
-  return candidates.find((file) => existsSync(file));
 };
 
 const chrome = options.chrome ?? findChrome() ??

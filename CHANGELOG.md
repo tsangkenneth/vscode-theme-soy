@@ -6,6 +6,10 @@ All notable changes to this project are documented here. The format is based on
 
 ## [Unreleased]
 
+### Added
+
+- An icon for the extension.
+
 ## [0.1.0] - 2026-09-30
 
 ### Added

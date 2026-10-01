@@ -35,8 +35,9 @@
     "dark",
     "light"
   ],
+  "icon": "images/icon.png",
   "galleryBanner": {
-    "color": "#282828",
+    "color": "#3c3836",
     "theme": "dark"
   },
   "scripts": {
