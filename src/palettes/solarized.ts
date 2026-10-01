@@ -61,7 +61,7 @@ const accents = {
   orange1: orange,
   orange2: orange,
   transparent: "#0000",
-  // Badge text; reads better than base03 on both magenta and blue
+  // Badge text; reads better than base03 on blue
   white: base3,
 } as const;
 
@@ -145,6 +145,51 @@ const terminal = {
   "terminal.ansiBrightWhite": base3,
 };
 
+// As in VS Code's built-in Solarized themes, the sidebars are darker than the
+// editor. Solarized has no color darker than base03 or between base2 and
+// base1, so those shades are the built-in themes' colors.
+const sideBarDark = "#00212b";
+const shadeLight = "#ddd6c1";
+
+const surfaces: Record<ColorScheme, Record<string, string>> = {
+  // Inputs and chat messages keep the editor background, lighter than the
+  // sidebar. The activity bar also stays base03, a little lighter than the
+  // sidebar.
+  dark: {
+    "sideBar.background": sideBarDark,
+    "activityBarTop.background": sideBarDark,
+    "input.background": base03,
+    // Inactive icons default to 40% opacity, too faint on base03
+    "activityBar.foreground": base1,
+    "activityBar.inactiveForeground": base00,
+    // base00 is only 2.9:1 on the base02 tab strip
+    "tab.inactiveForeground": base0,
+  },
+  // The sidebars, activity bar, title bar, status bar and the gaps between
+  // panes are one shell of base2. Inputs, chat messages and the tab strip are
+  // a shade darker.
+  light: {
+    "sideBar.background": base2,
+    "activityBar.background": base2,
+    "activityBarTop.background": base2,
+    // Also the gaps between panes, in the modern layout
+    "titleBar.activeBackground": base2,
+    "titleBar.inactiveBackground": base2,
+    "statusBar.background": base2,
+    "statusBar.noFolderBackground": base2,
+    "input.background": shadeLight,
+    "editorGroupHeader.tabsBackground": shadeLight,
+    "editorGroupHeader.tabsBorder": shadeLight,
+    "tab.inactiveBackground": shadeLight,
+    // The default list colors are base2, the same as the sidebar
+    "list.activeSelectionBackground": shadeLight,
+    "list.inactiveSelectionBackground": shadeLight,
+    "list.hoverBackground": shadeLight,
+    "list.focusBackground": shadeLight,
+    "list.dropBackground": shadeLight,
+  },
+};
+
 export const solarizedVariants: Variant[] = (["light", "dark"] as const).map((
   scheme,
 ) => ({
@@ -153,5 +198,5 @@ export const solarizedVariants: Variant[] = (["light", "dark"] as const).map((
   type: scheme,
   palette: palettes[scheme],
   syntax: syntax[scheme],
-  uiOverrides: terminal,
+  uiOverrides: { ...terminal, ...surfaces[scheme] },
 }));

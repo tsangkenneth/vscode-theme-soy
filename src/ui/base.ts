@@ -51,7 +51,8 @@ export const getBaseColors: ColorsGetter = (palette) => {
     "dropdown.border": bg1,
     "dropdown.foreground": fg1,
     // INPUT
-    "input.background": bg0,
+    // A step off the sidebar, so inputs and chat messages stand out from it
+    "input.background": bg1,
     "input.border": bg1,
     "input.foreground": fg1,
     "input.placeholderForeground": withAlpha(fg1, 96),
@@ -68,7 +69,7 @@ export const getBaseColors: ColorsGetter = (palette) => {
     "scrollbarSlider.hoverBackground": bg3,
     "scrollbarSlider.background": withAlpha(bg2, 153),
     // BADGE
-    "badge.background": purple1,
+    "badge.background": blue1,
     "badge.foreground": white,
     // PROGRESS BAR
     "progressBar.background": aqua1,
@@ -102,15 +103,16 @@ export const getBaseColors: ColorsGetter = (palette) => {
     "editorGroup.border": bg1,
     "editorGroup.dropBackground": withAlpha(bg1, 96),
     "editorGroupHeader.noTabsBackground": bg0,
-    "editorGroupHeader.tabsBackground": bg0,
+    // A step off the editor, which the active tab joins
+    "editorGroupHeader.tabsBackground": bg1,
     "editorGroupHeader.tabsBorder": bg1,
     // TABS
     "tab.border": transparent,
     "tab.activeBorder": aqua1,
-    "tab.activeBackground": bg1,
+    "tab.activeBackground": bg0,
     "tab.activeForeground": fg1,
     "tab.inactiveForeground": fg4,
-    "tab.inactiveBackground": bg0,
+    "tab.inactiveBackground": bg1,
     "tab.unfocusedActiveForeground": fg4,
     "tab.unfocusedActiveBorder": transparent,
     "tab.unfocusedInactiveForeground": grey,

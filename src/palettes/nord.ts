@@ -56,7 +56,7 @@ const palette: Palette = {
   orange1: nord12,
   orange2: nord12,
   transparent: "#0000",
-  // Badge text; reads better than nord6 on both nord15 and nord10
+  // Badge text; reads better than nord6 on nord10
   white: nord0,
 };
 

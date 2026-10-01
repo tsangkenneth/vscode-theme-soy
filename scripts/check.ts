@@ -87,8 +87,7 @@ for (const { id, palette, syntax } of variants) {
     const color = palette[key as PaletteKey];
     checkContrast(id, `ui ${key}`, color, palette.bg0, target);
   }
-  // Badge text on its two badge backgrounds
-  checkContrast(id, "ui white on purple1", palette.white, palette.purple1, 3);
+  // Badge text on the badge background
   checkContrast(id, "ui white on blue1", palette.white, palette.blue1, 3);
 }
 
