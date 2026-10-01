@@ -1,3 +1,6 @@
 node_modules
 .DS_Store
 *.vsix
+# deno.lock is the lockfile of record
+package-lock.json
+bun.lock

@@ -15,7 +15,12 @@
   ],
   "scripts": {
     "build": "node src/main.ts",
-    "check": "node scripts/check.ts"
+    "check": "node scripts/check.ts",
+    "preview": "node scripts/preview.ts"
+  },
+  "devDependencies": {
+    "vscode-oniguruma": "^2.0.1",
+    "vscode-textmate": "^9.3.2"
   },
   "contributes": {
     "themes": [

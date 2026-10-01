@@ -72,10 +72,11 @@ The generator is plain TypeScript with no dependencies. It runs on Deno, Node
 ```sh
 deno task build      # or: node src/main.ts / bun src/main.ts
 deno task check      # format, lint, type check and contrast check
+deno task preview    # show how a variant colors the samples
 ```
 
-Node and Bun can run the contrast check directly: `node scripts/check.ts` or
-`bun scripts/check.ts`.
+Node and Bun can run the scripts directly, e.g. `node scripts/check.ts` or
+`bun scripts/preview.ts`.
 
 `build` writes one JSON file per variant to `themes/` and updates
 `contributes.themes` in `package.json` to match `src/variants.ts`. Commit the
@@ -88,19 +89,43 @@ Reload Window**) to see changes. The files in `samples/` cover the cases that
 matter for the syntax rules, and **Developer: Inspect Editor Tokens and Scopes**
 shows which rule colored a token.
 
+### Previewing syntax colors in the terminal
+
+`scripts/preview.ts` colors files with VS Code's own grammars and TextMate
+engine, so you can check syntax rules without opening VS Code. It reads the
+grammars from your VS Code installation, and uses the two development
+dependencies in `package.json` (Deno fetches them automatically; with Node or
+Bun, run `npm install` or `bun install` first).
+
+```sh
+deno task preview                                  # all samples, first variant
+deno task preview --variant soy-nord samples/sample.py
+deno task preview --plain samples/sample.ts        # [text|role] markup
+deno task preview --plain --scopes Settings samples/sample.ts
+```
+
+In a terminal it prints the code in the theme's colors. With `--plain`, or when
+the output is piped, colored tokens are marked as `[text|role]` instead, and
+`--scopes <text>` lists the TextMate scopes of matching tokens. Semantic
+highlighting needs a language server, so the preview shows TextMate colors only.
+If VS Code is installed somewhere unusual, pass its built-in extensions folder
+with `--extensions <dir>`.
+
 ### Layout
 
-| Path               | Purpose                                           |
-| ------------------ | ------------------------------------------------- |
-| `src/main.ts`      | Entry point: writes themes and syncs the manifest |
-| `src/variants.ts`  | The list of variants to generate                  |
-| `src/palettes/`    | Palette definitions, one file per family          |
-| `src/ui/`          | Workbench (non-syntax) color mappings             |
-| `src/syntax/`      | Token and semantic token rules for code           |
-| `src/types.ts`     | Shared types: palette slots and syntax roles      |
-| `scripts/check.ts` | Consistency and contrast checks for every variant |
-| `themes/`          | Generated theme files                             |
-| `samples/`         | Code samples for checking the syntax rules        |
+| Path                 | Purpose                                           |
+| -------------------- | ------------------------------------------------- |
+| `src/main.ts`        | Entry point: writes themes and syncs the manifest |
+| `src/theme.ts`       | Builds the theme JSON for a variant               |
+| `src/variants.ts`    | The list of variants to generate                  |
+| `src/palettes/`      | Palette definitions, one file per family          |
+| `src/ui/`            | Workbench (non-syntax) color mappings             |
+| `src/syntax/`        | Token and semantic token rules for code           |
+| `src/types.ts`       | Shared types: palette slots and syntax roles      |
+| `scripts/check.ts`   | Consistency and contrast checks for every variant |
+| `scripts/preview.ts` | Terminal preview of syntax colors                 |
+| `themes/`            | Generated theme files                             |
+| `samples/`           | Code samples for checking the syntax rules        |
 
 ## License
 
